@@ -40,7 +40,7 @@ describe('Sign In page', () => {
       signInPage.typePassword(nonRegisteredUser.password);
       signInPage.clickSignInBtn();
 
-      cy.get('.login-failed').should('be.visible');
+      cy.get('[data-cy="login-error"]').should('be.visible');
     });
   });
 });

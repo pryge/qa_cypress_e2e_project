@@ -1,26 +1,43 @@
-import PageObject from '../PageObject';
-
-class SettingsPageObject extends PageObject {
-  url = '/settings';
-
-  get updateSettingsButton() {
-    return cy.get('[data-cy="update-settings-btn"]');
+class SettingsPage {
+  visit() {
+    cy.visit('/settings');
   }
 
-  changeItem(dataCY, value) {
-    cy.get(`[data-cy="${dataCY}"]`).as('inputField');
-    cy.get('@inputField').clear();
-    cy.get('@inputField').type(value);
+  usernameInput = () => cy.get('[data-cy=settings-username]');
+  bioInput = () => cy.get('[data-cy=settings-bio]');
+  emailInput = () => cy.get('[data-cy=settings-email]');
+  passwordInput = () => cy.get('[data-cy=settings-password]');
+  submitBtn = () => cy.get('[data-cy=settings-submit]');
+  logoutBtn = () => cy.get('[data-cy=settings-logout]');
+
+  updateUsername(username) {
+    this.usernameInput().clear().type(username);
+    this.submitBtn().click();
   }
 
-  checkInput (dataCY, value) {
-    cy.get(`[data-cy="${dataCY}"]`).as('newInputField');
-    cy.get('@newInputField').should('have.value', value);
+  updateBio(bio, password = null) {
+    this.bioInput().clear().type(bio);
+
+    if (password) {
+      this.passwordInput().clear().type(password);
+    }
+
+    this.submitBtn().click();
   }
 
-  clickUpdateSettingsBtn() {
-    this.updateSettingsButton.click();
+  updateEmail(email) {
+    this.emailInput().clear().type(email);
+    this.submitBtn().click();
+  }
+
+  updatePassword(password) {
+    this.passwordInput().clear().type(password);
+    this.submitBtn().click();
+  }
+
+  logout() {
+    this.logoutBtn().click();
   }
 }
 
-export default SettingsPageObject;
+export default SettingsPage;

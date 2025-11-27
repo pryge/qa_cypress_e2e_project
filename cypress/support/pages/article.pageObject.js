@@ -1,69 +1,43 @@
-/// <reference types='cypress' />
-/// <reference types='../settings' />
+class ArticlePage {
+  visitNewArticle() {
+    cy.visit('/editor');
+  }
 
-import ArticlePage from '../support/pages/article.pageObject';
-import SignInPage from '../support/pages/signIn.pageObject';
-import { faker } from '@faker-js/faker';
+  titleInput = () => cy.get('[data-cy=article-title]');
+  descriptionInput = () => cy.get('[data-cy=article-description]');
+  bodyInput = () => cy.get('[data-cy=article-body]');
+  tagInput = () => cy.get('[data-cy=article-tag]');
+  publishBtn = () => cy.get('[data-cy=article-publish]');
+  editBtn = () => cy.get('[data-cy=article-edit]').first();
+  deleteBtn = () => cy.get('[data-cy=article-delete]').first();
 
-const articlePage = new ArticlePage();
-const signInPage = new SignInPage();
+  createArticle({ title, description, body }) {
+    this.titleInput().type(title);
+    this.descriptionInput().type(description);
+    this.bodyInput().type(body);
+    this.publishBtn().click();
+  }
 
-describe('Article', () => {
-  let user;
-  let article;
+  editArticle({ title, description, body }) {
+    this.editBtn().click();
 
-  before(() => {
-    cy.task('generateUser').then((u) => {
-      user = u;
-      return u;
-    });
-  });
+    cy.get('[data-cy=article-title]').should('be.visible');
 
-  beforeEach(() => {
-    cy.task('db:clear');
-    cy.register(user.email, user.username, user.password);
-    signInPage.visit();
-    signInPage.typeEmail(user.email);
-    signInPage.typePassword(user.password);
-    signInPage.clickSignInBtn();
+    if (title) {
+      this.titleInput().clear();
+      this.titleInput().type(title);
+    }
+    if (description) this.descriptionInput().clear().type(description);
+    if (body) {
+      this.bodyInput().should('be.visible').clear();
+      this.bodyInput().type(body);
+    }
+    this.publishBtn().click();
+  }
 
-    cy.task('generateArticle').then((generated) => {
-      article = generated;
-    });
-  });
+  deleteArticle() {
+    this.deleteBtn().click();
+  }
+}
 
-  it('should be created using New Article form', () => {
-    articlePage.visitNewArticle();
-    articlePage.createArticle(article);
-
-    cy.get('[data-cy=article-title]', { timeout: 10000 })
-      .should('contain', article.title);
-  });
-
-  it('should be edited using Edit button', () => {
-    articlePage.visitNewArticle();
-    articlePage.createArticle(article);
-
-    const updated = {
-      title: faker.lorem.words(5),
-      description: faker.lorem.words(10),
-      body: faker.lorem.paragraphs(2)
-    };
-
-    articlePage.editArticle(updated);
-
-    cy.contains(updated.title).should('exist');
-
-    cy.get('[data-cy=article-body]', { timeout: 10000 })
-      .should('contain', updated.body);
-  });
-
-  it('should be deleted using Delete button', () => {
-    articlePage.visitNewArticle();
-    articlePage.createArticle(article);
-
-    articlePage.deleteArticle();
-
-    cy.get('[data-cy=article-title]', { timeout: 10000 }).should('not.exist');
-  });
-});
+export default ArticlePage;

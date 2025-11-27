@@ -43,7 +43,7 @@ describe('Settings page', () => {
   it('should provide an ability to update bio', () => {
     const newBio = faker.lorem.sentence();
 
-    settingsPage.updateBio(newBio, user.password);
+    settingsPage.updateBio(newBio);
 
     cy.visit(`/profile/${user.username}`);
     cy.contains(newBio).should('be.visible');
@@ -62,8 +62,6 @@ describe('Settings page', () => {
 
   it('should provide an ability to update password', () => {
     const newPass = faker.internet.password(12, true);
-
-    settingsPage.visit();
 
     settingsPage.updatePassword(newPass);
 
