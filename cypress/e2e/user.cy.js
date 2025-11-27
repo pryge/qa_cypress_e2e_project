@@ -11,16 +11,15 @@ describe('Follow/unfollow button', () => {
   let userA;
   let userB;
 
-  before(() => {
+  beforeEach(() => {
     cy.task('db:clear');
 
-    cy.task('generateUser').then((u) => {
-      userA = u;
-      return u;
-    });
-    cy.task('generateUser').then((u) => {
-      userB = u;
-      return u;
+    return cy.task('generateUsers', 2).then(([uA, uB]) => {
+      userA = uA;
+      userB = uB;
+
+      cy.request('POST', '/api/users', { user: userA });
+      cy.request('POST', '/api/users', { user: userB });
     });
   });
 

@@ -13,7 +13,7 @@ const homePage = new HomePage();
 describe('Settings page', () => {
   let user;
 
-  before(() => {
+  beforeEach(() => {
     cy.task('db:clear');
     cy.task('generateUser').then((generated) => {
       user = generated;
